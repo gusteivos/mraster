@@ -140,7 +140,7 @@ int main(int argc, char *argv[])
 #if (defined(_WIN32) || defined(_win32)) && !defined(NDEBUG)
 
     #include <windows.h>
-    
+
 
     int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
     {
@@ -148,7 +148,7 @@ int main(int argc, char *argv[])
         UNREFERENCED_PARAMETER(hPrevInstance);
 
 
-        return main(argc, argv);
+        return main(__argc, __argv);
 
     }
 
