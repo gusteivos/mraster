@@ -3,8 +3,10 @@
 #define FRAME_BUFFER_H_
 
     #include <SDL2/SDL.h>
-    #include <stdlib.h>
+
     #include <stdbool.h>
+    #include <stdio.h>
+    #include <stdlib.h>
 
 
     typedef struct frame_buffer
@@ -19,7 +21,7 @@
         Uint32 format;
 
     } frame_buffer_t;
-    
+
 
     frame_buffer_t *create_frame_buffer(Uint16 width, Uint16 height);
 

@@ -135,3 +135,21 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 
 }
+
+
+#if (defined(_WIN32) || defined(_win32)) && !defined(NDEBUG)
+
+    #include <windows.h>
+    
+
+    int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+    {
+
+        UNREFERENCED_PARAMETER(hPrevInstance);
+
+
+        return main(argc, argv);
+
+    }
+
+#endif
