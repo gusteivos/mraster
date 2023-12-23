@@ -1,28 +1,42 @@
 #include "bct.h"
 
 
-double BCT_triangle_area_2d(vector_2_t a, vector_2_t b, vector_2_t c)
+float BCT_triangle_area_2d(vector_2_t vertex_a, vector_2_t vertex_b, vector_2_t vertex_c)
 {
 
-    return 0.5 * (double)((b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y));
+    return ((vertex_b.x - vertex_a.x) * (vertex_c.y - vertex_a.y) - (vertex_c.x - vertex_a.x) * (vertex_b.y - vertex_a.y)) / 2.0f;
 
 }
 
-void BCT_area_bct_2d(double area, vector_2_t a, vector_2_t b, vector_2_t c, vector_2_t p, double *alpha, double *beta, double *gamma)
+void  BCT_area_2d         (vector_2_t vertex_a, vector_2_t vertex_b, vector_2_t vertex_c, vector_2_t point, float *alpha, float *beta, float *gamma, float area)
 {
 
-    double _area_p_b_c = BCT_triangle_area_2d(p, b, c);
+    float area_p_b_c = BCT_triangle_area_2d(point, vertex_b, vertex_c);
 
-    double _area_p_c_a = BCT_triangle_area_2d(p, c, a);
- 
-    double _area_p_a_b = BCT_triangle_area_2d(p, a, b);
+    float area_p_c_a = BCT_triangle_area_2d(point, vertex_c, vertex_a);
 
-    *alpha = _area_p_b_c / area;
-    
-    *beta  = _area_p_c_a / area;
+    float area_p_a_b = BCT_triangle_area_2d(point, vertex_a, vertex_b);
 
-    // *gamma = 1.0 - *alpha - *beta;
-    
-    *gamma = _area_p_a_b / area;
+
+    if (alpha != NULL)
+    {
+
+        *alpha = area_p_b_c / area;
+
+    }
+
+    if (beta  != NULL)
+    {
+
+        *beta  = area_p_c_a / area;
+
+    }
+
+    if (gamma != NULL)
+    {
+
+        *gamma = area_p_a_b / area;
+
+    }
 
 }

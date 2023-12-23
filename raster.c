@@ -24,21 +24,21 @@ int simple_raster_thread_function(void *arg)
         if (this->block != NULL && this->block->complete == false)
         {
 
-            double triangle_area = BCT_triangle_area_2d(this->tri_vers[0], this->tri_vers[1], this->tri_vers[2]);
+            float triangle_area = BCT_triangle_area_2d(this->tri_vers[0], this->tri_vers[1], this->tri_vers[2]);
 
 
             Uint16 min_x = this->block->beginning.x, max_x = this->block->end.x, min_y = this->block->beginning.y, max_y = this->block->end.y;
 
-            
+
             for (int32_t y = min_y; y < max_y; y++)
             {
 
                 for (int32_t x = min_x; x < max_x; x++)
                 {
 
-                    double alpha, beta, gamma;
+                    float alpha, beta, gamma;
 
-                    BCT_area_bct_2d(triangle_area, this->tri_vers[0], this->tri_vers[1], this->tri_vers[2], create_vector_2(x, y), &alpha, &beta, &gamma);
+                    BCT_area(this->tri_vers[0], this->tri_vers[1], this->tri_vers[2], create_vector_2(x, y), &alpha, &beta, &gamma, triangle_area);
 
                     if (alpha >= 0 && beta >= 0 && gamma >= 0 && round(alpha + beta + gamma) == 1.0)
                     {
@@ -58,7 +58,7 @@ int simple_raster_thread_function(void *arg)
                 this->block->complete = true;
 
             } while (this->block->complete == false);
-            
+
         }
 
 
@@ -111,7 +111,7 @@ raster_thread_t *create_raster_thread(SDL_ThreadFunction fn)
 
     new_rasthr->tri_vers = NULL;
 
-    
+
     new_rasthr->thread = SDL_CreateThread(fn, "rasthr", (void *)new_rasthr);
 
     if (new_rasthr->thread == NULL)
@@ -124,7 +124,7 @@ raster_thread_t *create_raster_thread(SDL_ThreadFunction fn)
 
         free(new_rasthr);
 
-    }    
+    }
 
 
 endoffunc:
@@ -138,9 +138,9 @@ bool single_raster_triangle_on_frame_buffer(frame_buffer_t *fb, vector_2_t tri_v
 {
 
 
-    double triangle_area = BCT_triangle_area_2d(tri_vers[0], tri_vers[1], tri_vers[2]);
+    float triangle_area = BCT_triangle_area_2d(tri_vers[0], tri_vers[1], tri_vers[2]);
 
-    
+
     /*
 
         TODO:
@@ -150,16 +150,16 @@ bool single_raster_triangle_on_frame_buffer(frame_buffer_t *fb, vector_2_t tri_v
 
     Uint16 min_x = 0, max_x = fb->width, min_y = 0, max_y = fb->height;
 
-    
+
     for (int32_t y = min_y; y < max_y; y++)
     {
 
         for (int32_t x = min_x; x < max_x; x++)
         {
 
-            double alpha, beta, gamma;
+            float alpha, beta, gamma;
 
-            BCT_area_bct_2d(triangle_area, tri_vers[0], tri_vers[1], tri_vers[2], create_vector_2(x, y), &alpha, &beta, &gamma);
+            BCT_area(tri_vers[0], tri_vers[1], tri_vers[2], create_vector_2(x, y), &alpha, &beta, &gamma, triangle_area);
 
             if (alpha >= 0 && beta >= 0 && gamma >= 0 && round(alpha + beta + gamma) == 1.0)
             {

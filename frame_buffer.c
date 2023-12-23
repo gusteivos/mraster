@@ -51,7 +51,7 @@ bool set_frame_buffer_rgba(frame_buffer_t *fb, Uint16 x, Uint16 y, Uint8 r, Uint
 
     if (fb == NULL)
     {
-        
+
         fprintf(stderr, "TODO: .\n");
 
 
@@ -72,7 +72,7 @@ bool fill_frame_buffer_rgba(frame_buffer_t *fb, Uint8 r, Uint8 g, Uint8 b, Uint8
 
     if (fb == NULL)
     {
-        
+
         fprintf(stderr, "TODO: .\n");
 
 
@@ -85,9 +85,9 @@ bool fill_frame_buffer_rgba(frame_buffer_t *fb, Uint8 r, Uint8 g, Uint8 b, Uint8
 
     for (int q = 0; q < fb->width * fb->height; q++)
     {
-    
+
         fb->pixels[q] = SDL_MapRGBA(fb_pf, r, g, b, a);
-    
+
     }
 
 
@@ -100,7 +100,7 @@ bool SDL_Render_frame_buffer(SDL_Renderer *renderer, frame_buffer_t *fb)
 
     if (renderer == NULL || fb == NULL)
     {
-        
+
         fprintf(stderr, "TODO: .\n");
 
 
@@ -118,6 +118,7 @@ bool SDL_Render_frame_buffer(SDL_Renderer *renderer, frame_buffer_t *fb)
 
     SDL_RenderCopy(renderer, texture, NULL, NULL);
 
+    SDL_DestroyTexture(texture);
 
     return false;
 
