@@ -1,0 +1,37 @@
+[
+{
+  "directory": "/home/gusteivos/Documentos/mraster/build",
+  "command": "/usr/bin/gcc  -I/home/gusteivos/Documentos/mraster/. -g -o CMakeFiles/mraster.dir/bct.c.o -c /home/gusteivos/Documentos/mraster/bct.c",
+  "file": "/home/gusteivos/Documentos/mraster/bct.c"
+},
+{
+  "directory": "/home/gusteivos/Documentos/mraster/build",
+  "command": "/usr/bin/gcc  -I/home/gusteivos/Documentos/mraster/. -g -o CMakeFiles/mraster.dir/frame_buffer.c.o -c /home/gusteivos/Documentos/mraster/frame_buffer.c",
+  "file": "/home/gusteivos/Documentos/mraster/frame_buffer.c"
+},
+{
+  "directory": "/home/gusteivos/Documentos/mraster/build",
+  "command": "/usr/bin/gcc  -I/home/gusteivos/Documentos/mraster/. -g -o CMakeFiles/mraster.dir/main.c.o -c /home/gusteivos/Documentos/mraster/main.c",
+  "file": "/home/gusteivos/Documentos/mraster/main.c"
+},
+{
+  "directory": "/home/gusteivos/Documentos/mraster/build",
+  "command": "/usr/bin/gcc  -I/home/gusteivos/Documentos/mraster/. -g -o CMakeFiles/mraster.dir/raster.c.o -c /home/gusteivos/Documentos/mraster/raster.c",
+  "file": "/home/gusteivos/Documentos/mraster/raster.c"
+},
+{
+  "directory": "/home/gusteivos/Documentos/mraster/build",
+  "command": "/usr/bin/gcc  -I/home/gusteivos/Documentos/mraster/. -g -o CMakeFiles/mraster.dir/vectors/vector2.c.o -c /home/gusteivos/Documentos/mraster/vectors/vector2.c",
+  "file": "/home/gusteivos/Documentos/mraster/vectors/vector2.c"
+},
+{
+  "directory": "/home/gusteivos/Documentos/mraster/build",
+  "command": "/usr/bin/gcc  -I/home/gusteivos/Documentos/mraster/. -g -o CMakeFiles/mraster.dir/vectors/vector3.c.o -c /home/gusteivos/Documentos/mraster/vectors/vector3.c",
+  "file": "/home/gusteivos/Documentos/mraster/vectors/vector3.c"
+},
+{
+  "directory": "/home/gusteivos/Documentos/mraster/build",
+  "command": "/usr/bin/gcc  -I/home/gusteivos/Documentos/mraster/. -g -o CMakeFiles/mraster.dir/vectors/vector4.c.o -c /home/gusteivos/Documentos/mraster/vectors/vector4.c",
+  "file": "/home/gusteivos/Documentos/mraster/vectors/vector4.c"
+}
+]
