@@ -20,6 +20,8 @@
 
         Uint32 format;
 
+        SDL_PixelFormat *pixel_format;
+
     } frame_buffer_t;
 
 
@@ -29,6 +31,7 @@
     bool set_frame_buffer_rgba(frame_buffer_t *fb, Uint16 x, Uint16 y, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
     bool fill_frame_buffer_rgba(frame_buffer_t *fb, Uint8 r, Uint8 g, Uint8 b, Uint8 a);
+
 
     bool SDL_Render_frame_buffer(SDL_Renderer *renderer, frame_buffer_t *fb);
 

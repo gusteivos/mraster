@@ -22,9 +22,12 @@ frame_buffer_t *create_frame_buffer(Uint16 width, Uint16 height)
     new_fb->height = height;
 
 
+    new_fb->pixel_format = SDL_AllocFormat(new_fb->format = SDL_PIXELFORMAT_RGB888); /* or SDL_PIXELFORMAT_ARGB8888* */
+
+
     new_fb->pixels = (Uint32 *)malloc(new_fb->width * new_fb->height * sizeof(Uint32));
 
-    if (new_fb->pixels == NULL)
+    if (new_fb->pixels == NULL || new_fb->pixel_format == NULL)
     {
 
         fprintf(stderr, "TODO: .\n");
@@ -35,9 +38,6 @@ frame_buffer_t *create_frame_buffer(Uint16 width, Uint16 height)
         new_fb = NULL;
 
     }
-
-
-    new_fb->format = SDL_PIXELFORMAT_RGB888;
 
 
 endoffunc:
@@ -60,7 +60,7 @@ bool set_frame_buffer_rgba(frame_buffer_t *fb, Uint16 x, Uint16 y, Uint8 r, Uint
     }
 
 
-    fb->pixels[y * fb->width + x] = SDL_MapRGBA(SDL_AllocFormat(fb->format), r, g, b, a);
+    fb->pixels[y * fb->width + x] = SDL_MapRGBA(fb->pixel_format, r, g, b, a);
 
 
     return false;
@@ -81,12 +81,10 @@ bool fill_frame_buffer_rgba(frame_buffer_t *fb, Uint8 r, Uint8 g, Uint8 b, Uint8
     }
 
 
-    SDL_PixelFormat *fb_pf = SDL_AllocFormat(fb->format);
-
     for (int q = 0; q < fb->width * fb->height; q++)
     {
 
-        fb->pixels[q] = SDL_MapRGBA(fb_pf, r, g, b, a);
+        fb->pixels[q] = SDL_MapRGBA(fb->pixel_format, r, g, b, a);
 
     }
 
@@ -94,6 +92,7 @@ bool fill_frame_buffer_rgba(frame_buffer_t *fb, Uint8 r, Uint8 g, Uint8 b, Uint8
     return false;
 
 }
+
 
 bool SDL_Render_frame_buffer(SDL_Renderer *renderer, frame_buffer_t *fb)
 {
@@ -139,10 +138,19 @@ void free_frame_buffer(frame_buffer_t *fb)
     }
 
 
-    if (fb->pixels != NULL)
+    if (fb->pixel_format != NULL)
     {
+     
+        SDL_FreeFormat(fb->pixel_format);
+    
 
-        free(fb);
+        if (fb->pixels != NULL)
+        {
+
+            free(fb->pixels);
+
+        }
+
 
     }
 
