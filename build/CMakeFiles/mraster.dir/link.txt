@@ -1,1 +1,0 @@
-/usr/bin/gcc -g CMakeFiles/mraster.dir/bct.c.o CMakeFiles/mraster.dir/frame_buffer.c.o CMakeFiles/mraster.dir/main.c.o CMakeFiles/mraster.dir/raster.c.o CMakeFiles/mraster.dir/vectors/vector2.c.o CMakeFiles/mraster.dir/vectors/vector3.c.o CMakeFiles/mraster.dir/vectors/vector4.c.o -o bin/mraster  -lSDL2 -lm 

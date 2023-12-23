@@ -1,3 +1,0 @@
-/home/gusteivos/Documentos/mraster/build/CMakeFiles/mraster.dir
-/home/gusteivos/Documentos/mraster/build/CMakeFiles/edit_cache.dir
-/home/gusteivos/Documentos/mraster/build/CMakeFiles/rebuild_cache.dir
