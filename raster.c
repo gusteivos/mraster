@@ -21,8 +21,13 @@ int simple_raster_thread_function(void *arg)
     {
 
 
+        // printf("test 0\n");
+
+
         if (this->block != NULL && this->block->complete == false)
         {
+
+            // printf("test\n");
 
             float triangle_area = BCT_triangle_area_2d(this->tri_vers[0], this->tri_vers[1], this->tri_vers[2]);
 
@@ -40,7 +45,7 @@ int simple_raster_thread_function(void *arg)
 
                     BCT_area(this->tri_vers[0], this->tri_vers[1], this->tri_vers[2], create_vector_2(x, y), &alpha, &beta, &gamma, triangle_area);
 
-                    if (alpha >= 0 && beta >= 0 && gamma >= 0 && round(alpha + beta + gamma) == 1.0)
+                    if (alpha >= 0 && beta >= 0 && gamma >= 0 && round(alpha + beta + gamma) == 1.0f)
                     {
 
                         set_frame_buffer_rgb(this->fb, x, y, 255, 255, 255);
@@ -52,19 +57,20 @@ int simple_raster_thread_function(void *arg)
             }
 
 
-            do
-            {
-
-                this->block->complete = true;
-
-            } while (this->block->complete == false);
+            this->block->complete = true;
 
         }
+
+
+        // printf("test 1\n");
 
 
         SDL_LockMutex  (this->mutex);
 
         SDL_UnlockMutex(this->mutex);
+
+
+        // printf("test 2\n");
 
     }
 
@@ -178,16 +184,182 @@ bool single_raster_triangle_on_frame_buffer(frame_buffer_t *fb, vector_2_t tri_v
 }
 
 
-bool multi_raster_triangle_on_frame_buffer(frame_buffer_t *fb, vector_2_t tri_vers[3], raster_thread_t *threads, raster_block_area_t *blocks)
+bool multi_raster_triangle_on_frame_buffer(frame_buffer_t *fb, vector_2_t tri_vers[3], raster_thread_t *threads[], raster_block_area_t *blocks[])
 {
 
+    if (fb == NULL || threads == NULL || blocks == NULL)
+    {
+
+        fprintf(stderr, "TODO: .\n");
+
+
+        return true;
+
+    }
+
+
+    int current_thread_index = 0;
+
+    int current_block_index = 0;
+
+
+    raster_block_area_t *current_block = NULL;
+
+    while ((current_block = blocks[current_block_index]) != NULL)
+    {
+
+        
+        while (true)
+        {
+
+            raster_thread_t *current_thread = threads[current_thread_index];
+
+            if (current_thread == NULL)
+            {
+            
+                current_thread_index = 0;
+
+
+                continue;
+            
+            }            
+
+
+            SDL_UnlockMutex(current_thread->mutex);
+
+
+            if (current_thread->block != NULL)
+            {
+
+                if (current_thread->block->complete == true)
+                {
+
+
+                    SDL_LockMutex(current_thread->mutex);
+
+
+                    current_thread->fb = fb;
+
+                    current_thread->tri_vers = tri_vers;
+
+
+                    current_block->complete = false;
+
+                    current_thread->block = current_block;
+
+
+                    SDL_UnlockMutex(current_thread->mutex);
+
+
+                    break;
+
+
+                }
+
+            }
+            else
+            {
+
+
+                SDL_LockMutex(current_thread->mutex);
+
+
+                current_thread->fb = fb;
+
+                current_thread->tri_vers = tri_vers;
+
+
+                current_block->complete = false;
+
+                current_thread->block = current_block;
+
+
+                SDL_UnlockMutex(current_thread->mutex);
+
+
+                break;
+
+            }
+
+
+            current_thread_index++;
+
+        }
+        
 
 
 
+        current_block_index++;
 
-    return true;
+    }
+
+    current_thread_index = 0;
+
+
+    bool all_treads_are_free = true;
+
+    while (true)
+    {
+
+        raster_thread_t *current_thread = threads[current_thread_index];
+
+
+        if (current_thread == NULL)
+        {
+        
+            current_thread_index = 0;
+
+
+            if (all_treads_are_free == true)
+            {
+            
+                // printf("threads, OKY.\n");
+            
+
+                break;
+            
+            }
+
+            
+            all_treads_are_free = true;
+            
+            continue;
+        
+        }
+
+
+        if (current_thread->block != NULL)
+        {
+
+            if (current_thread->block->complete == true)
+            {
+
+                current_thread->block = NULL;
+
+                current_thread->fb = NULL;
+
+                current_thread->tri_vers = NULL;
+
+
+                SDL_LockMutex(current_thread->mutex);
+
+
+            }
+            else
+            {
+                
+               all_treads_are_free = false;
+
+            }
+
+        }
+
+
+        current_thread_index++;
+
+    }
+
+
+    return false;
 
 }
-
-
-
