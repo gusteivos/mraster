@@ -8,7 +8,7 @@ project(mraster VERSION 0.0.0.1 LANGUAGES C)
 
 file(GLOB executable_source_files
     "./*.c"
-    "./vectors/*.c"
+    "./*/*.c"
 )
 
 set(executable_header_files

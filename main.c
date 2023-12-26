@@ -56,21 +56,27 @@ int main(int argc, char *argv[])
     vector_2_t tri[] = { create_vector_2(WINDOW_WIDTH * 0.5, 0), create_vector_2(0, WINDOW_HEIGHT), create_vector_2(WINDOW_WIDTH, WINDOW_HEIGHT) };
 
 
-    raster_thread_t *rt0 = create_raster_thread(simple_raster_thread_function);
+    raster_thread_t *rt0 = create_raster_thread();
     
-    SDL_LockMutex(rt0->mutex);
+    SDL_LockMutex(rt0->pause_mutex);
     
-    raster_thread_t *rt1 = create_raster_thread(simple_raster_thread_function);
+    raster_thread_t *rt1 = create_raster_thread();
 
-    SDL_LockMutex(rt1->mutex);
+    SDL_LockMutex(rt1->pause_mutex);
 
-    raster_thread_t *rt2 = create_raster_thread(simple_raster_thread_function);
+    raster_thread_t *rt2 = create_raster_thread();
     
-    SDL_LockMutex(rt2->mutex);
+    SDL_LockMutex(rt2->pause_mutex);
 
-    raster_thread_t *rt3 = create_raster_thread(simple_raster_thread_function);
+    raster_thread_t *rt3 = create_raster_thread();
 
-    SDL_LockMutex(rt3->mutex);
+    SDL_LockMutex(rt3->pause_mutex);
+
+
+    init_raster_thread(rt0, simple_raster_thread_function, "rt0");
+    init_raster_thread(rt1, simple_raster_thread_function, "rt1");
+    init_raster_thread(rt2, simple_raster_thread_function, "rt2");
+    init_raster_thread(rt3, simple_raster_thread_function, "rt3");
 
 
     raster_block_area_t rb0 = { true, create_vector_2(0, 0), create_vector_2(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2)};

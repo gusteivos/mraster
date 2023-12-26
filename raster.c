@@ -16,126 +16,114 @@ int simple_raster_thread_function(void *arg)
 
     raster_thread_t *this = (raster_thread_t *)arg;
 
+    
+    void **othres = (void **)this->other; /* For the future. */
+
 
     while (1)
     {
 
 
-        // printf("test 0\n");
+        int try_block_mutex = SDL_TryLockMutex(this->block_mutex);
 
-
-        if (this->block != NULL && this->block->complete == false)
+        if (try_block_mutex == 0)
         {
 
-            // printf("test\n");
 
-            float triangle_area = BCT_triangle_area_2d(this->tri_vers[0], this->tri_vers[1], this->tri_vers[2]);
-
-
-            Uint16 min_x = this->block->beginning.x, max_x = this->block->end.x, min_y = this->block->beginning.y, max_y = this->block->end.y;
-
-
-            for (int32_t y = min_y; y < max_y; y++)
+            if (this->block != NULL && this->block->completed == false)
             {
 
-                for (int32_t x = min_x; x < max_x; x++)
+
+                float triangle_area = BCT_triangle_area_2d(this->tri_vers[0], this->tri_vers[1], this->tri_vers[2]);
+
+
+                Uint16 min_x = this->block->begin.x, max_x = this->block->end.x, min_y = this->block->begin.y, max_y = this->block->end.y;
+
+
+                for (int32_t y = min_y; y < max_y; y++)
                 {
 
-                    float alpha, beta, gamma;
-
-                    BCT_area(this->tri_vers[0], this->tri_vers[1], this->tri_vers[2], create_vector_2(x, y), &alpha, &beta, &gamma, triangle_area);
-
-                    if (alpha >= 0 && beta >= 0 && gamma >= 0 && round(alpha + beta + gamma) == 1.0f)
+                    for (int32_t x = min_x; x < max_x; x++)
                     {
 
-                        set_frame_buffer_rgb(this->fb, x, y, 255, 255, 255);
+                        float alpha, beta, gamma;
+
+                        BCT_area(this->tri_vers[0], this->tri_vers[1], this->tri_vers[2], create_vector_2(x, y), &alpha, &beta, &gamma, triangle_area);
+
+                        if (alpha >= 0 && beta >= 0 && gamma >= 0 && round(alpha + beta + gamma) == 1.0f)
+                        {
+
+                            set_frame_buffer_rgb(this->fb, x, y, 255, 255, 255);
+
+                        }
 
                     }
 
                 }
 
+
+                this->block->completed = true;
+
+
             }
 
 
-            this->block->complete = true;
+            SDL_UnlockMutex(this->block_mutex);
+
+        }
+        else if (try_block_mutex == SDL_MUTEX_TIMEDOUT)
+        {
+
+            continue;
+ 
+        }
+        else
+        {
+
+            fprintf(stderr, "Error when trying to lock the block_mutex, thread: %s, error: %s\n", SDL_GetThreadName(this->thread), SDL_GetError());
+
+
+            return EXIT_FAILURE;
 
         }
 
 
-        // printf("test 1\n");
+        SDL_LockMutex  (this->pause_mutex);
+
+        SDL_UnlockMutex(this->pause_mutex);
 
 
-        SDL_LockMutex  (this->mutex);
+        int try_kkill_mutex = SDL_TryLockMutex(this->kkill_mutex);
 
-        SDL_UnlockMutex(this->mutex);
+        if (try_kkill_mutex == 0)
+        {
 
-
-        // printf("test 2\n");
-
-    }
-
-    return 0;
-
-}
+            SDL_UnlockMutex(this->kkill_mutex);
 
 
-raster_thread_t *create_raster_thread(SDL_ThreadFunction fn)
-{
+            break;
 
-    raster_thread_t *new_rasthr = NULL;
+        }
+        else if (try_kkill_mutex == SDL_MUTEX_TIMEDOUT)
+        {
 
-    if (fn == NULL)
-    {
+            continue;
 
-        fprintf(stderr, "TODO: .\n");
+        }
+        else
+        {
 
-
-        goto endoffunc;
-
-    }
-
+            fprintf(stderr, "Error when trying to lock the kkill_mutex, thread: %s, error: %s\n", SDL_GetThreadName(this->thread), SDL_GetError());
 
 
-    new_rasthr = (raster_thread_t *)malloc(sizeof(raster_thread_t));
+            return EXIT_FAILURE;
 
-    if (new_rasthr == NULL)
-    {
-
-        fprintf(stderr, "TODO: .\n");
-
-
-        goto endoffunc;
-
+        }
+        
     }
 
 
-    new_rasthr->block = NULL;
-
-    new_rasthr->fb = NULL;
-
-    new_rasthr->mutex = SDL_CreateMutex();
-
-    new_rasthr->tri_vers = NULL;
-
-
-    new_rasthr->thread = SDL_CreateThread(fn, "rasthr", (void *)new_rasthr);
-
-    if (new_rasthr->thread == NULL)
-    {
-
-        SDL_DestroyMutex(new_rasthr->mutex);
-
-        new_rasthr->mutex = NULL;
-
-
-        free(new_rasthr);
-
-    }
-
-
-endoffunc:
-
-    return new_rasthr;
+    return EXIT_SUCCESS;
 
 }
 
@@ -219,49 +207,22 @@ bool multi_raster_triangle_on_frame_buffer(frame_buffer_t *fb, vector_2_t tri_ve
             
                 current_thread_index = 0;
 
+                SDL_Delay(1);
+
 
                 continue;
             
             }            
 
 
-            SDL_UnlockMutex(current_thread->mutex);
+            SDL_UnlockMutex(current_thread->pause_mutex);
 
 
-            if (current_thread->block != NULL)
-            {
-
-                if (current_thread->block->complete == true)
-                {
-
-
-                    SDL_LockMutex(current_thread->mutex);
-
-
-                    current_thread->fb = fb;
-
-                    current_thread->tri_vers = tri_vers;
-
-
-                    current_block->complete = false;
-
-                    current_thread->block = current_block;
-
-
-                    SDL_UnlockMutex(current_thread->mutex);
-
-
-                    break;
-
-
-                }
-
-            }
-            else
+            if (current_thread->block == NULL || current_thread->block->completed == true)
             {
 
 
-                SDL_LockMutex(current_thread->mutex);
+                SDL_LockMutex(current_thread->pause_mutex);
 
 
                 current_thread->fb = fb;
@@ -269,15 +230,22 @@ bool multi_raster_triangle_on_frame_buffer(frame_buffer_t *fb, vector_2_t tri_ve
                 current_thread->tri_vers = tri_vers;
 
 
-                current_block->complete = false;
+                current_block->completed = false;
+
+
+                SDL_LockMutex(current_thread->block_mutex);
 
                 current_thread->block = current_block;
+    
+                SDL_UnlockMutex(current_thread->block_mutex);
 
 
-                SDL_UnlockMutex(current_thread->mutex);
+
+                SDL_UnlockMutex(current_thread->pause_mutex);
 
 
                 break;
+
 
             }
 
@@ -331,17 +299,22 @@ bool multi_raster_triangle_on_frame_buffer(frame_buffer_t *fb, vector_2_t tri_ve
         if (current_thread->block != NULL)
         {
 
-            if (current_thread->block->complete == true)
+            if (current_thread->block->completed == true)
             {
 
-                current_thread->block = NULL;
+                SDL_LockMutex(current_thread->block_mutex);
+
+                current_thread->block = current_block;
+    
+                SDL_UnlockMutex(current_thread->block_mutex);
+
 
                 current_thread->fb = NULL;
 
                 current_thread->tri_vers = NULL;
 
 
-                SDL_LockMutex(current_thread->mutex);
+                SDL_LockMutex(current_thread->pause_mutex);
 
 
             }
