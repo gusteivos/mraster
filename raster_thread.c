@@ -85,7 +85,7 @@ bool init_raster_thread(raster_thread_t *thread, SDL_ThreadFunction fn, char *na
         fprintf(stderr, "TODO: .\n");
 
 
-        return;
+        return false;
 
     }
 
